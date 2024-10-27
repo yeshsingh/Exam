@@ -1,0 +1,50 @@
+long long mx, my, Mx, My;
+
+void initBounds(const vector<int>& x, const vector<int>& y) {
+    mx = *min_element(x.begin(), x.end());
+    Mx = *max_element(x.begin(), x.end());
+    my = *min_element(y.begin(), y.end());
+    My = *max_element(y.begin(), y.end());
+}
+
+long long countPoints(const vector<int>& x, const vector<int>& y, long long x1, long long y1, long long x2, long long y2) {
+    long long cnt = 0;
+    for (size_t i = 0; i < x.size(); i++) {
+        if (x[i] > x1 && x[i] < x2 && y[i] > y1 && y[i] < y2) cnt++;
+    }
+    return cnt;
+}
+
+long long minArea(const vector<int>& x, const vector<int>& y, int k) {
+    initBounds(x, y);
+    long long dx = Mx - mx;
+    long long dy = My - my;
+
+    long long x1 = mx - 1;
+    long long y1 = my - 1;
+    long long sd = abs(dx - dy) + 1;
+
+    long long x2 = (dx > dy) ? Mx + 1 : Mx + sd;
+    long long y2 = (dy >= dx) ? My + 1 : My + sd;
+
+    long long area = (x2 - x1) * (x2 - x1);
+    long long ms = static_cast<long long>(sqrt(k)) + 1;
+
+    for (long long p = x1; p < x2 - ms; p++) {
+        for (long long q = y1; q < y2 - ms; q++) {
+            long long d1 = x2 - p;
+            long long d2 = y2 - q;
+            long long s = min(d1, d2);
+
+            for (long long i = s; i >= ms; i--) {
+                long long cnt = countPoints(x, y, p, q, p + i, q + i);
+                if (cnt >= k) {
+                    long long ca = i * i;
+                    if (ca < area) area = ca;
+                } else break;
+            }
+        }
+    }
+
+    return area;
+}
